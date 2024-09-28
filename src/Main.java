@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
@@ -10,40 +9,14 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         int N = scanner.nextInt();
         int M = scanner.nextInt();
-
-        System.out.println(Josephus(N, M));
     }
 
-    static ArrayList<Integer> Josephus(int N, int M) {
-        Queue<Integer> queue = new Queue<Integer>(10);
+    static int tripletSum(ArrayList<Integer> arr, int sum) {
 
-        for(int i=1 ; i<=N ; ++i) {
-            queue.push(i);
-        }
+        Sorter<Integer> sorter = new MergeSorter<Integer>();
 
-        int cnt = 1;
+        sorter.sort(arr);
 
-        ArrayList<Integer> answer = new ArrayList<>();
-        while(!queue.empty())
-        {
-            if(cnt == M) {
-                cnt = 1;
-                answer.add(queue.pop());
-            }
-            else {
-                cnt++;
-                queue.push(queue.pop());
-            }
-        }
-
-        return answer;
-    }
-
-    static int tripletSum(int N, int sum) {
-        int cnt = 0;
-
-
-
-        return cnt;
+        return 0;
     }
 }
