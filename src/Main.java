@@ -1,83 +1,30 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        int[] arr = new int[100];
-        for(int i=0 ; i<100 ; ++i) arr[i] = i+1;
+        int[] arr = { 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1 };
 
-        int[] aux = arr.clone();
-        shuffle(aux);
+        int cnt0 = 0, cnt1 = 0, first = arr[0], second = -1;
 
-        System.out.println(Arrays.toString(aux));
-        System.out.println(quickSelect(aux, 6, false));
-    }
-
-    static void shuffle(int[] arr) {
-
-        int length = arr.length;
-        Random random = new Random();
-
-        for (int i = length - 1; i > 0; i--) {
-
-            int randomIndex = random.nextInt(0, i + 1);
-
-            int temp = arr[i];
-            arr[i] = arr[randomIndex];
-            arr[randomIndex] = temp;
-        }
-    }
-
-    static List<Integer> quickSelect(int[] arr, int n, Boolean ascending) {
-
-        int length = arr.length;
-        select(arr, 0, length-1, n, ascending);
-
-        ArrayList<Integer> list = new ArrayList<>();
-        for(int i=length-n ; i<length ; ++i) list.add(arr[i]);
-        InsertionSorter<Integer> sorter = new InsertionSorter<>();
-        sorter.sort(list);
-
-        return list;
-    }
-
-    static int select(int[] arr, int l, int r, int n, Boolean ascending) {
-
-        if (l == r) return arr[l];
-
-        int pivotIndex = partition(arr, l, r, ascending);
-
-        int length = arr.length;
-        int dist = length - n;
-        if (pivotIndex == dist) return arr[pivotIndex];
-        if (pivotIndex > dist) return select(arr, l, pivotIndex - 1, n, ascending);
-
-        return select(arr, pivotIndex + 1, r, n, ascending);
-    }
-
-    static int partition(int[] arr, int left, int right, Boolean ascending) {
-
-        int pivot = arr[right];
-        int i = left;
-
-        for (int j = left ; j < right ; ++j) {
-            if ((ascending ? 1 : -1) * (arr[j] - pivot) > 0) {
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
-                i++;
+        for (int e : arr) {
+            if (first == e) cnt0++;
+            else {
+                cnt1++;
+                second = e;
             }
         }
 
-        int temp = arr[i];
-        arr[i] = arr[right];
-        arr[right] = temp;
+        if (first > second) { // swap if first is bigger than second
+            int temp = first;
+            first = second;
+            second = temp;
+        }
 
-        return i;
+        for (int i=0 ; i<cnt0 ; ++i) arr[i] = first;
+        for (int i=cnt0 ; i<arr.length ; ++i) arr[i] = second;
+
+        System.out.println(Arrays.toString(arr));
     }
 }
-
