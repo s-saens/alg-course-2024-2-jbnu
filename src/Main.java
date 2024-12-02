@@ -1,35 +1,88 @@
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
+    static int N, M;
+    static List<Integer>[] graph;
+    static boolean[] visited;
+    static int[] stack;
+    static int stackSize;
+    static int currentSccIndex;
+    static int[] sccIndex;
 
-    static int[][] dp;
+    static void dfs1(int now) {
+        visited[now] = true;
 
-    static int get(int x, int y) {
-        return x < 0 || y < 0 ? 0 : dp[y][x];
+        for(int next : graph[now]) if(!visited[next]) dfs1(next);
+
+        stack[stackSize++] = now;
+    }
+
+    static void dfs2(int now, int id) {
+        visited[now] = true;
+        sccIndex[now] = id;
+        for(int i = 0; i < N; i++) if(!visited[i] && contains(i, now)) dfs2(i, id);
+    }
+
+    static boolean contains(int i, int target) {
+        for(int x : graph[i]) if(x == target) return true;
+        return false;
     }
 
     public static void main(String[] args) {
-
         Scanner scanner = new Scanner(System.in);
-        String sy = scanner.nextLine(), sx = scanner.nextLine();
-        int leny = sy.length(), lenx = sx.length();
+        N = scanner.nextInt();
+        M = scanner.nextInt();
 
-        dp = new int[leny][lenx];
-        for(int y=0 ; y<leny ; ++y) for(int x=0 ; x<lenx ; ++x) {
-            if(sy.charAt(y) == sx.charAt(x)) dp[y][x] = get(x-1, y-1) + 1;
-            else dp[y][x] = Math.max(get(x-1, y), get(x, y-1));
+        graph = new List[N];
+        for(int i = 0; i < N; i++)
+            graph[i] = new ArrayList<>();
+
+        for(int i = 0; i < M; i++) {
+            int a = scanner.nextInt() - 1;
+            int b = scanner.nextInt() - 1;
+            graph[a].add(b);
         }
 
-        int x = lenx-1, y = leny-1;
-        StringBuilder sb = new StringBuilder();
+        stack = new int[N];
+        stackSize = 0;
+        visited = new boolean[N];
+        for(int i = 0; i < N; i++)
+            if(!visited[i])
+                dfs1(i);
 
-        while(x >= 0 && y >= 0) {
-            if (sx.charAt(x) == sy.charAt(y)) { sb.append(sy.charAt(y--)); x--; }
-            else if(get(x-1, y) > get(x, y-1)) x--;
-            else y--;
+        sccIndex = new int[N];
+        Arrays.fill(sccIndex, -1);
+        visited = new boolean[N];
+        currentSccIndex = 0;
+
+        for(int i = stackSize - 1; i >= 0; i--) {
+            int now = stack[i];
+            if(!visited[now])
+                dfs2(now, currentSccIndex++);
         }
 
-        System.out.println(dp[leny-1][lenx-1]);
-        System.out.println(sb.reverse());
+        List<Integer>[] sccGroups = new List[currentSccIndex];
+
+        for(int i = 0; i < currentSccIndex; i++)
+            sccGroups[i] = new ArrayList<>();
+
+        for(int i = 0; i < N; i++)
+            sccGroups[sccIndex[i]].add(i + 1);
+
+        for(List<Integer> scc : sccGroups)
+            Collections.sort(scc);
+
+        Integer[] order = new Integer[currentSccIndex];
+
+        for(int i = 0; i < currentSccIndex; i++) order[i] = i;
+
+        Arrays.sort(order, Comparator.comparingInt(a -> sccGroups[a].getFirst()));
+
+        System.out.println(currentSccIndex);
+        for(int i : order) {
+            for(int v : sccGroups[i])
+                System.out.print(v + " ");
+            System.out.print("-1\n");
+        }
     }
 }
